@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <h1>Inscription</h1>
+
+    {% for flash in app.flashes('success') %}
+        <div class="alert alert-success">{{ flash }}</div>
+    {% endfor %}
+
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.username) }}
+        {{ form_row(registrationForm.firstName) }}
+        {{ form_row(registrationForm.lastName) }}
+        {{ form_row(registrationForm.address) }}
+        {{ form_row(registrationForm.postalCode) }}
+        {{ form_row(registrationForm.city) }}
+        {{ form_row(registrationForm.latitude) }}
+        {{ form_row(registrationForm.longitude) }}
+        {{ form_row(registrationForm.birthDate) }}
+        {{ form_row(registrationForm.phoneNumber) }}
+        {{ form_row(registrationForm.plainPassword.first) }}
+        {{ form_row(registrationForm.plainPassword.second) }}
+
+        <button class="btn btn-primary">S'inscrire</button>
+    {{ form_end(registrationForm) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <style>
+        .autocomplete-suggestions {
+            border: 1px solid #ccc;
+            background: white;
+            position: absolute;
+            z-index: 1000;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            width: 100%;
+        }
+        .autocomplete-suggestions li {
+            padding: 8px;
+        }
+        .autocomplete-suggestions li:hover {
+            background-color: #eee;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.querySelector('[data-autocomplete="address"]');
+
+            if (!input) return;
+
+            const suggestions = document.createElement('ul');
+            suggestions.classList.add('autocomplete-suggestions');
+            input.parentNode.appendChild(suggestions);
+
+            input.addEventListener('input', function () {
+                const query = this.value;
+                if (query.length < 3) {
+                    suggestions.innerHTML = '';
+                    return;
+                }
+
+                fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestions.innerHTML = '';
+                        data.features.forEach(feature => {
+                            const li = document.createElement('li');
+                            li.textContent = feature.properties.label;
+                            li.style.cursor = 'pointer';
+                            li.addEventListener('click', () => {
+                                input.value = feature.properties.label;
+
+                                // Mettre à jour les autres champs avec les informations de l'adresse
+                                document.querySelector('#user_registration_form_postalCode').value = feature.properties.postcode || '';
+                                document.querySelector('#user_registration_form_city').value = feature.properties.city || '';
+                                document.querySelector('#user_registration_form_latitude').value = feature.geometry.coordinates[1] || '';
+                                document.querySelector('#user_registration_form_longitude').value = feature.geometry.coordinates[0] || '';
+
+                                // Vider et cacher la liste des suggestions après un clic
+                                suggestions.innerHTML = '';
+                            });
+                            suggestions.appendChild(li);
+                        });
+                    });
+            });
+        });
+    </script>
+{% endblock %}
