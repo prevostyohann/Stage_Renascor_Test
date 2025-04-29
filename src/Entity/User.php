@@ -3,16 +3,25 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+
+use App\Traits\TimestampableTrait;  //pour createAt et updateAt auto
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection; 
+
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
+    use TimestampableTrait;   //pour createAt et updateAt auto
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -45,6 +54,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 10)]
     private ?string $streetNumber = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $address = null;
+
     #[ORM\Column]
     private ?int $postalCode = null;
 
@@ -53,9 +65,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 30)]
     private ?string $country = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $address = null;
 
     #[ORM\Column]
     private ?float $latitude = null;
@@ -69,11 +78,53 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     private ?string $phoneNumber = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    /**
+     * @var Collection<int, Office>
+     */
+    #[ORM\OneToMany(targetEntity: Office::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $offices;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
+    /**
+     * @var Collection<int, CertificateOwned>
+     */
+    #[ORM\OneToMany(targetEntity: CertificateOwned::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $certificateOwneds;
+
+    /**
+     * @var Collection<int, DegreeOwned>
+     */
+    #[ORM\OneToMany(targetEntity: DegreeOwned::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $degreeOwneds;
+
+    /**
+     * @var Collection<int, Faq>
+     */
+    #[ORM\OneToMany(targetEntity: Faq::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $faqs;
+
+    /**
+     * @var Collection<int, Rdv>
+     */
+    #[ORM\OneToMany(targetEntity: Rdv::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $rdvs;
+
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $reviews;
+
+    public function __construct()
+    {
+        $this->offices = new ArrayCollection();
+        $this->certificateOwneds = new ArrayCollection();
+        $this->degreeOwneds = new ArrayCollection();
+        $this->faqs = new ArrayCollection();
+        $this->rdvs = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
+    }
+
+
 
     public function getId(): ?int
     {
@@ -198,6 +249,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
     public function getPostalCode(): ?int
     {
         return $this->postalCode;
@@ -230,18 +293,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCountry(string $country): static
     {
         $this->country = $country;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -294,27 +345,184 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /**
+     * @return Collection<int, Office>
+     */
+    public function getOffices(): Collection
     {
-        return $this->createdAt;
+        return $this->offices;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function addOffice(Office $office): static
     {
-        $this->createdAt = $createdAt;
+        if (!$this->offices->contains($office)) {
+            $this->offices->add($office);
+            $office->setUserId($this);
+        }
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function removeOffice(Office $office): static
     {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
+        if ($this->offices->removeElement($office)) {
+            // set the owning side to null (unless already changed)
+            if ($office->getUserId() === $this) {
+                $office->setUserId(null);
+            }
+        }
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, CertificateOwned>
+     */
+    public function getCertificateOwneds(): Collection
+    {
+        return $this->certificateOwneds;
+    }
+
+    public function addCertificateOwned(CertificateOwned $certificateOwned): static
+    {
+        if (!$this->certificateOwneds->contains($certificateOwned)) {
+            $this->certificateOwneds->add($certificateOwned);
+            $certificateOwned->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCertificateOwned(CertificateOwned $certificateOwned): static
+    {
+        if ($this->certificateOwneds->removeElement($certificateOwned)) {
+            // set the owning side to null (unless already changed)
+            if ($certificateOwned->getUserId() === $this) {
+                $certificateOwned->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DegreeOwned>
+     */
+    public function getDegreeOwneds(): Collection
+    {
+        return $this->degreeOwneds;
+    }
+
+    public function addDegreeOwned(DegreeOwned $degreeOwned): static
+    {
+        if (!$this->degreeOwneds->contains($degreeOwned)) {
+            $this->degreeOwneds->add($degreeOwned);
+            $degreeOwned->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDegreeOwned(DegreeOwned $degreeOwned): static
+    {
+        if ($this->degreeOwneds->removeElement($degreeOwned)) {
+            // set the owning side to null (unless already changed)
+            if ($degreeOwned->getUserId() === $this) {
+                $degreeOwned->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Faq>
+     */
+    public function getFaqs(): Collection
+    {
+        return $this->faqs;
+    }
+
+    public function addFaq(Faq $faq): static
+    {
+        if (!$this->faqs->contains($faq)) {
+            $this->faqs->add($faq);
+            $faq->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFaq(Faq $faq): static
+    {
+        if ($this->faqs->removeElement($faq)) {
+            // set the owning side to null (unless already changed)
+            if ($faq->getUserId() === $this) {
+                $faq->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rdv>
+     */
+    public function getRdvs(): Collection
+    {
+        return $this->rdvs;
+    }
+
+    public function addRdv(Rdv $rdv): static
+    {
+        if (!$this->rdvs->contains($rdv)) {
+            $this->rdvs->add($rdv);
+            $rdv->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRdv(Rdv $rdv): static
+    {
+        if ($this->rdvs->removeElement($rdv)) {
+            // set the owning side to null (unless already changed)
+            if ($rdv->getUserId() === $this) {
+                $rdv->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): static
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews->add($review);
+            $review->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): static
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getUserId() === $this) {
+                $review->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
