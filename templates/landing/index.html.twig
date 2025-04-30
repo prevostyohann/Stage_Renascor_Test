@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue sur Bloom Care{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+        <h1 class="text-2xl font-extrabold text-purple-900 mb-2 text-center">Qui êtes-vous?</h1>
+        <p class="text-center text-gray-600 mb-6">
+            Bienvenue sur Bloom Care.<br>Avant de continuer, dites-nous qui vous êtes pour personnaliser votre expérience :
+        </p>
+
+        <div class="space-y-6">
+            <!-- Professionnelle -->
+            <div class="border-2 border-purple-300 rounded-xl p-5">
+                <h2 class="text-lg font-bold text-purple-900 mb-2">Je suis une professionnelle</h2>
+                <p class="text-sm text-gray-700 mb-4">
+                    Je propose des soins de bien-être et d’accompagnement (socio-esthétique, socio-coiffure, sophrologie, etc.).
+                </p>
+                <button
+                    onclick="window.location.href='{{ path('app_register', {'type': 'pro'}) }}'"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+                >
+                    Créer un compte pro
+                </button>
+            </div>
+
+            <!-- Cliente -->
+            <div class="border border-gray-300 rounded-xl p-5">
+                <h2 class="text-lg font-bold text-gray-800 mb-2">Je suis une cliente</h2>
+                <p class="text-sm text-gray-700 mb-4">
+                    Je souhaite prendre rendez-vous avec un(e) professionnel(le) du bien-être formé(e) à l’accompagnement de la fragilité.
+                </p>
+                <button
+                    onclick="window.location.href='{{ path('app_register', {'type': 'client'}) }}'"
+                    class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200"
+                >
+                    Créer un compte client
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
