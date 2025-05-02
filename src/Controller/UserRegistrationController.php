@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -43,11 +44,11 @@ class UserRegistrationController extends AbstractController
 
             $this->addFlash('success', 'Inscription réussie !');
 
-            return $this->redirectToRoute('app_landing');
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('user_registration/index.html.twig', [
-            'registrationForm' => $form,
+            'registrationForm' => $form->createView(),
         ]);
     }
 }
