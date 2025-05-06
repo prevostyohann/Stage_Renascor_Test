@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final class ClientController extends AbstractController
 {
-    #[Route('/profil/client', name: 'client_profile')]
+    #[Route('/client/home', name: 'client_home')]
     public function index(AuthorizationCheckerInterface $authChecker): Response
     {
         // Vérifie si l'utilisateur a le rôle ROLE_CLIENT
@@ -18,6 +18,6 @@ final class ClientController extends AbstractController
             return $this->redirectToRoute('app_landing');
         }
 
-        return $this->render('client/profile.html.twig');
+        return $this->render('client/home.html.twig');
     }
 }

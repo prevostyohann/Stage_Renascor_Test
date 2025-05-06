@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final class ProController extends AbstractController
 {
-    #[Route('/profil/pro', name: 'pro_profile')]
+    #[Route('/pro/home', name: 'pro_home')]
     public function index(AuthorizationCheckerInterface $authChecker): Response
     {
         // Vérifie si l'utilisateur a le rôle ROLE_PRO
@@ -19,6 +19,6 @@ final class ProController extends AbstractController
             return $this->redirectToRoute('app_landing');
         }
 
-        return $this->render('pro/profile.html.twig');
+        return $this->render('pro/home.html.twig');
     }
 }
