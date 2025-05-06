@@ -27,6 +27,9 @@
                 registrationForm.username,
                 registrationForm.firstName,
                 registrationForm.lastName,
+                registrationForm.streetNumber,
+                registrationForm.streetName,
+                registrationForm.addressComplement,
                 registrationForm.address,
                 registrationForm.postalCode,
                 registrationForm.city,
@@ -79,42 +82,61 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const input = document.querySelector('[data-autocomplete="address"]');
+    function initRegistrationAutocomplete() {
+        const input = document.querySelector('[data-autocomplete="address"]');
+        if (!input) return;
 
-            if (!input) return;
+        input.setAttribute('autocomplete', 'off');
 
-            const suggestions = document.createElement('ul');
-            suggestions.classList.add('autocomplete-suggestions');
-            input.parentNode.appendChild(suggestions);
+        // Supprimer les suggestions précédentes s’il y en avait
+        const oldSuggestions = input.parentNode.querySelector('.autocomplete-suggestions');
+        if (oldSuggestions) oldSuggestions.remove();
 
-            input.addEventListener('input', function () {
-                const query = this.value;
-                if (query.length < 3) {
+        const suggestions = document.createElement('ul');
+        suggestions.classList.add('autocomplete-suggestions');
+        input.parentNode.style.position = 'relative';
+        input.parentNode.appendChild(suggestions);
+
+        input.addEventListener('input', function () {
+            const query = this.value;
+            if (query.length < 3) {
+                suggestions.innerHTML = '';
+                return;
+            }
+
+            fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
+                .then(response => response.json())
+                .then(data => {
                     suggestions.innerHTML = '';
-                    return;
-                }
+                    data.features.forEach(feature => {
+                        const li = document.createElement('li');
+                        li.textContent = feature.properties.label;
+                        li.style.cursor = 'pointer';
 
-                fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
-                    .then(response => response.json())
-                    .then(data => {
-                        suggestions.innerHTML = '';
-                        data.features.forEach(feature => {
-                            const li = document.createElement('li');
-                            li.textContent = feature.properties.label;
-                            li.style.cursor = 'pointer';
-                            li.addEventListener('click', () => {
-                                input.value = feature.properties.label;
-                                document.querySelector('#user_registration_form_postalCode').value = feature.properties.postcode || '';
-                                document.querySelector('#user_registration_form_city').value = feature.properties.city || '';
-                                document.querySelector('#user_registration_form_latitude').value = feature.geometry.coordinates[1] || '';
-                                document.querySelector('#user_registration_form_longitude').value = feature.geometry.coordinates[0] || '';
-                                suggestions.innerHTML = '';
-                            });
-                            suggestions.appendChild(li);
+                        li.addEventListener('click', () => {
+                            input.value = feature.properties.label;
+                            document.querySelector('#user_registration_form_postalCode').value = feature.properties.postcode || '';
+                            document.querySelector('#user_registration_form_city').value = feature.properties.city || '';
+                            document.querySelector('#user_registration_form_latitude').value = feature.geometry.coordinates[1] || '';
+                            document.querySelector('#user_registration_form_longitude').value = feature.geometry.coordinates[0] || '';
+
+                            const streetNumberField = document.querySelector('#user_registration_form_streetNumber');
+                            const streetNameField = document.querySelector('#user_registration_form_streetName');
+                            streetNumberField.value = feature.properties.housenumber || '';
+                            streetNameField.value = feature.properties.street || '';
+
+                            suggestions.innerHTML = '';
                         });
+
+                        suggestions.appendChild(li);
                     });
-            });
+                });
         });
-    </script>
+    }
+
+    // Exécute l'autocomplétion à l'ouverture initiale
+    document.addEventListener('DOMContentLoaded', initRegistrationAutocomplete);
+    document.addEventListener('turbo:load', initRegistrationAutocomplete);
+</script>
+
 {% endblock %}

@@ -38,6 +38,9 @@
                 form.username,
                 form.firstName,
                 form.lastName,
+                form.streetNumber,
+                form.streetName,
+                form.addressComplement,
                 form.address,
                 form.postalCode,
                 form.city,
@@ -86,52 +89,54 @@
     </style>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const input = document.querySelector('[data-autocomplete="address"]');
+function initAddressAutocomplete() {
+    const input = document.querySelector('[data-autocomplete="address"]');
+    if (!input) return;
 
-        if (!input) return;
+    input.setAttribute('autocomplete', 'off');
 
-        // Création et insertion de la liste des suggestions
-        const suggestions = document.createElement('ul');
-        suggestions.classList.add('autocomplete-suggestions');
-        input.parentNode.style.position = 'relative'; // nécessaire pour positionner la liste
-        input.parentNode.appendChild(suggestions);
+    const suggestions = document.createElement('ul');
+    suggestions.classList.add('autocomplete-suggestions');
+    input.parentNode.style.position = 'relative';
+    input.parentNode.appendChild(suggestions);
 
-        // Quand l'utilisateur tape dans le champ
-        input.addEventListener('input', function () {
-            const query = this.value;
-            if (query.length < 3) {
+    input.addEventListener('input', function () {
+        const query = this.value;
+        if (query.length < 3) {
+            suggestions.innerHTML = '';
+            return;
+        }
+
+        fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
+            .then(response => response.json())
+            .then(data => {
                 suggestions.innerHTML = '';
-                return;
-            }
+                data.features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature.properties.label;
+                    li.style.cursor = 'pointer';
 
-            fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
-                .then(response => response.json())
-                .then(data => {
-                    suggestions.innerHTML = '';
-                    data.features.forEach(feature => {
-                        const li = document.createElement('li');
-                        li.textContent = feature.properties.label;
-                        li.style.cursor = 'pointer';
-
-                        // Utilise mousedown pour que ça se déclenche avant le blur
-                        li.addEventListener('mousedown', () => {
-                            input.value = feature.properties.label;
-                            document.querySelector('#user_profile_postalCode').value = feature.properties.postcode || '';
-                            document.querySelector('#user_profile_city').value = feature.properties.city || '';
-                            document.querySelector('#user_profile_latitude').value = feature.geometry.coordinates[1] || '';
-                            document.querySelector('#user_profile_longitude').value = feature.geometry.coordinates[0] || '';
-                            suggestions.innerHTML = ''; // On vide la liste immédiatement
-                        });
-
-                        suggestions.appendChild(li);
+                    li.addEventListener('mousedown', () => {
+                        input.value = feature.properties.label;
+                        document.querySelector('#user_profile_postalCode').value = feature.properties.postcode || '';
+                        document.querySelector('#user_profile_city').value = feature.properties.city || '';
+                        document.querySelector('#user_profile_latitude').value = feature.geometry.coordinates[1] || '';
+                        document.querySelector('#user_profile_longitude').value = feature.geometry.coordinates[0] || '';
+                        document.querySelector('#user_profile_streetNumber').value = feature.properties.housenumber || '';
+                        document.querySelector('#user_profile_streetName').value = feature.properties.street || '';
+                        suggestions.innerHTML = '';
                     });
-                });
-        });
 
-        
+                    suggestions.appendChild(li);
+                });
+            });
     });
+}
+
+document.addEventListener('DOMContentLoaded', initAddressAutocomplete);
+document.addEventListener('turbo:load', initAddressAutocomplete);
 </script>
+
 
 
 {% endblock %}

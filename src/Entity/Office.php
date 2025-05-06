@@ -13,7 +13,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 
-
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: OfficeRepository::class)]
 class Office
 {
@@ -45,6 +45,9 @@ class Office
     #[ORM\Column(length: 10)]
     private ?string $officeStreetNumber = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $officeStreetName = null;
+
     #[ORM\Column(length: 255)]
     private ?string $officeAddress = null;
 
@@ -54,7 +57,7 @@ class Office
     #[ORM\Column(length: 30)]
     private ?string $officeCity = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, nullable: true)]
     private ?string $officeCountry = null;
 
     #[ORM\Column]
@@ -66,10 +69,10 @@ class Office
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column]
+    #[ORM\Column( nullable: true)]
     private ?int $score = null;
 
-    #[ORM\Column]
+    #[ORM\Column( nullable: true)]
     private ?bool $vip = null;
 
     #[ORM\Column(enumType: statusEnum::class)]
@@ -589,5 +592,18 @@ class Office
 
         return $this;
     }
+
+
+    public function getOfficeStreetName(): ?string
+    {
+    return $this->officeStreetName;
+    }
+
+    public function setOfficeStreetName(?string $officeStreetName): self
+    {
+    $this->officeStreetName = $officeStreetName;
+    return $this;
+    }
+
 
 }

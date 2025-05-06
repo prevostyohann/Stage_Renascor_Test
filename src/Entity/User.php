@@ -54,6 +54,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $streetNumber = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $streetName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $addressComplement = null;
 
     #[ORM\Column(length: 255)]
     private ?string $address = null;
@@ -248,6 +253,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->streetNumber = $streetNumber;
 
         return $this;
+    }
+
+    public function getStreetName(): ?string
+    {
+    return $this->streetName;
+    }
+
+    public function setStreetName(?string $streetName): self
+    {
+    $this->streetName = $streetName;
+    return $this;
+    }
+
+    public function getAddressComplement(): ?string
+    {
+    return $this->addressComplement;
+    }
+
+    public function setAddressComplement(?string $addressComplement): static
+    {
+    $this->addressComplement = $addressComplement;
+
+    return $this;
     }
 
     public function getAddress(): ?string

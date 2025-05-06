@@ -22,6 +22,13 @@ class UserProfileType extends AbstractType
             ])
             ->add('lastName')
             ->add('firstName')
+            ->add('addressComplement', TextType::class, [
+                'required' => false,
+                'label' => 'Complément d\'adresse',
+                'attr' => [
+                    'placeholder' => 'Bâtiment, étage, résidence, etc.',
+                ],
+            ])
             ->add('address', TextType::class, [
                 'attr' => [
                     'data-autocomplete' => 'address',
@@ -51,7 +58,9 @@ class UserProfileType extends AbstractType
             ->add('postalCode', HiddenType::class)
             ->add('city', HiddenType::class)
             ->add('latitude', HiddenType::class)
-            ->add('longitude', HiddenType::class);
+            ->add('longitude', HiddenType::class)
+            ->add('streetNumber', HiddenType::class)
+            ->add('streetName', HiddenType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
