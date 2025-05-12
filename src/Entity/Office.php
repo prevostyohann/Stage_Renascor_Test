@@ -42,7 +42,7 @@ class Office
     #[ORM\Column(length: 20)]
     private ?string $officePhone = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column(length: 10, nullable: true)]
     private ?string $officeStreetNumber = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

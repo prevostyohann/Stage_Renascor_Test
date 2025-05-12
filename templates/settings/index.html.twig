@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+        <div class="flex items-center justify-between mt-6">
+    {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
+
+    {% if back_route %}
+        <a href="{{ path(back_route) }}" class="flex items-center text-blue-700 font-semibold hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+        </a>
+    {% endif %}
+</div>
+    <div style="max-width: 400px; margin: auto; padding: 20px; font-family: sans-serif;">
+        <h2 style="margin-bottom: 20px;">Settings</h2>
+
+        <div style="border: 1px solid #ccc; border-radius: 10px; overflow: hidden;">
+            <a href="#" style="display: flex; justify-content: space-between; padding: 15px; text-decoration: none; color: black; border-bottom: 1px solid #eee;">
+                <span>Language</span><span>English</span>
+            </a>
+            <a href="#" style="display: block; padding: 15px; text-decoration: none; color: black; border-bottom: 1px solid #eee;">
+                Notification Preferences
+            </a>
+            <!-- Pas de Update Profile ici -->
+            <a href="#" style="display: block; padding: 15px; text-decoration: none; color: black; border-bottom: 1px solid #eee;">
+                Payment Information
+            </a>
+            <a href="#" style="display: block; padding: 15px; text-decoration: none; color: black;">
+                Privacy Policy
+            </a>
+        </div>
+
+        <a href="{{ path('app_logout') }}" style="color: red; display: block; margin-top: 20px; text-decoration: none;">
+            Log Out
+        </a>
+    </div>
+    
+{% endblock %}
