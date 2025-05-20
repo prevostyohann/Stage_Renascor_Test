@@ -23,11 +23,7 @@ class Profession
     #[ORM\Column(length: 60)]
     private ?string $name = null;
 
-    /**
-     * @var Collection<int, Office>
-     */
-    #[ORM\ManyToMany(targetEntity: Office::class, inversedBy: 'professions')]
-    private Collection $office;
+   
 
     /**
      * @var Collection<int, Office>
@@ -55,7 +51,6 @@ class Profession
 
     public function __construct()
     {
-        $this->office = new ArrayCollection();
         $this->offices = new ArrayCollection();
         $this->specialities = new ArrayCollection();
         $this->certificateOwneds = new ArrayCollection();
@@ -81,29 +76,7 @@ class Profession
         return $this;
     }
 
-    /**
-     * @return Collection<int, Office>
-     */
-    public function getOfficeId(): Collection
-    {
-        return $this->office;
-    }
-
-    public function addOfficeId(Office $officeId): static
-    {
-        if (!$this->office->contains($officeId)) {
-            $this->office->add($officeId);
-        }
-
-        return $this;
-    }
-
-    public function removeOfficeId(Office $officeId): static
-    {
-        $this->office->removeElement($officeId);
-
-        return $this;
-    }
+    
 
     /**
      * @return Collection<int, Office>
@@ -114,19 +87,18 @@ class Profession
     }
 
     public function addOffice(Office $office): static
-    {
-        if (!$this->offices->contains($office)) {
-            $this->offices->add($office);
-            $office->addProfessionId($this);
-        }
-
-        return $this;
+{
+    if (!$this->offices->contains($office)) {
+        $this->offices->add($office);
     }
+
+    return $this;
+}
 
     public function removeOffice(Office $office): static
     {
         if ($this->offices->removeElement($office)) {
-            $office->removeProfessionId($this);
+            $office->removeProfession($this);
         }
 
         return $this;

@@ -1,0 +1,82 @@
+/* Trying to override the calendar CSS*/
+
+/* Remove default padding and border */
+.fc .fc-daygrid-day {
+    padding: 0;
+    border: none;
+  }
+  
+  /* Remove event display */
+  .fc .fc-daygrid-event {
+    display: none !important;
+  }
+  
+  /* Remove highlight from today */
+  .fc .fc-day-today {
+    background-color: transparent !important;
+  }
+  
+  /* Center the date number fully */
+  .fc .fc-daygrid-day-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  /* Style the number itself */
+  .fc .fc-daygrid-day-number {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #1f2937; /* gray-800 */
+    text-decoration: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+  }
+  
+  /* Highlight selected day */
+  .fc .fc-daygrid-day.fc-selected .fc-daygrid-day-number {
+    background-color: #8464f4; /* Darker purple test */
+    color: white;
+  }
+  
+  /* Optional: limit calendar width */
+  #calendar {
+    margin: 0 auto;
+  }
+  
+  
+  /*Button Styles test */
+  
+  /* Default state */
+  .fc .fc-button {
+    background-color: #b49cf5;  /* Primary Test */
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  /* Hover state */
+  .fc .fc-button:hover {
+    background-color: #8464f4; /* #947bf4 old Secondary Test */
+  }
+  
+  /* Active (pressed) state */
+  .fc .fc-button:active {
+    background-color: #8464f4;
+  }
+  
+  /* Disabled state */
+  .fc .fc-button:disabled {
+    background-color: #ccc4fb; /* Tertiary Test */
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+  

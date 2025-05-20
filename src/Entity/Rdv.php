@@ -109,12 +109,35 @@ class Rdv
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
     public function getOfficeId(): ?Office
     {
         return $this->office;
     }
 
     public function setOfficeId(?Office $office): static
+    {
+        $this->office = $office;
+
+        return $this;
+    }
+
+    public function getOffice(): ?Office
+    {
+        return $this->office;
+    }
+
+    public function setOffice(?Office $office): static
     {
         $this->office = $office;
 

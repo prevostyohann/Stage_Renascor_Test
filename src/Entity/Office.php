@@ -42,7 +42,7 @@ class Office
     #[ORM\Column(length: 20)]
     private ?string $officePhone = null;
 
-    #[ORM\Column(length: 10, nullable: true)]
+    #[ORM\Column(length: 10)]
     private ?string $officeStreetNumber = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -94,17 +94,14 @@ class Office
     #[ORM\OneToMany(targetEntity: TimeConfiguration::class, mappedBy: 'office', orphanRemoval: true)]
     private Collection $timeConfigurations;
 
-    /**
-     * @var Collection<int, Profession>
-     */
-    #[ORM\ManyToMany(targetEntity: Profession::class, mappedBy: 'office')]
-    private Collection $professions;
+    
 
     /**
      * @var Collection<int, Profession>
      */
     #[ORM\ManyToMany(targetEntity: Profession::class, inversedBy: 'offices')]
-    private Collection $profession;
+     #[ORM\JoinTable(name: 'office_profession')]
+    private Collection $professions;
 
     /**
      * @var Collection<int, OfficeTypeOfService>
@@ -136,7 +133,6 @@ class Office
         $this->officePhotos = new ArrayCollection();
         $this->timeConfigurations = new ArrayCollection();
         $this->professions = new ArrayCollection();
-        $this->profession = new ArrayCollection();
         $this->officeTypeOfServices = new ArrayCollection();
         $this->rdvs = new ArrayCollection();
         $this->officeClosures = new ArrayCollection();
@@ -365,6 +361,18 @@ class Office
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, OfficePhoto>
      */
@@ -426,55 +434,33 @@ class Office
     }
 
     /**
-     * @return Collection<int, Profession>
-     */
-    public function getProfessions(): Collection
-    {
-        return $this->professions;
+ * @return Collection<int, Profession>
+ */
+public function getProfessions(): Collection
+{
+    return $this->professions;
+}
+
+public function addProfession(Profession $profession): static
+{
+    if (!$this->professions->contains($profession)) {
+        $this->professions->add($profession);
+        $profession->addOffice($this); // garde bien la synchro côté Profession
     }
 
-    public function addProfession(Profession $profession): static
-    {
-        if (!$this->professions->contains($profession)) {
-            $this->professions->add($profession);
-            $profession->addOfficeId($this);
-        }
+    return $this;
+}
 
-        return $this;
+public function removeProfession(Profession $profession): static
+{
+    if ($this->professions->removeElement($profession)) {
+        $profession->removeOffice($this);
     }
 
-    public function removeProfession(Profession $profession): static
-    {
-        if ($this->professions->removeElement($profession)) {
-            $profession->removeOfficeId($this);
-        }
+    return $this;
+}
 
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Profession>
-     */
-    public function getProfessionId(): Collection
-    {
-        return $this->profession;
-    }
-
-    public function addProfessionId(Profession $professionId): static
-    {
-        if (!$this->profession->contains($professionId)) {
-            $this->profession->add($professionId);
-        }
-
-        return $this;
-    }
-
-    public function removeProfessionId(Profession $professionId): static
-    {
-        $this->profession->removeElement($professionId);
-
-        return $this;
-    }
+   
 
     /**
      * @return Collection<int, OfficeTypeOfService>

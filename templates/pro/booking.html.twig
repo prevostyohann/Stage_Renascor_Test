@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<div class="grid grid-cols-1 gap-4">
+        <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+
+    {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_appoint' : null) %}
+
+    {% if back_route %}
+        <a href="{{ path(back_route) }}" class="flex items-center text-blue-700 font-semibold hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+        </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
+    {% endif %}
+</div>
+
+<h2 class="text-xl font-bold mb-4">Rendez-vous</h2>
+{% set jours = {
+    'Monday': 'Lundi',
+    'Tuesday': 'Mardi',
+    'Wednesday': 'Mercredi',
+    'Thursday': 'Jeudi',
+    'Friday': 'Vendredi',
+    'Saturday': 'Samedi',
+    'Sunday': 'Dimanche'
+} %}
+
+{% set mois = {
+    '01': 'Janvier',
+    '02': 'Février',
+    '03': 'Mars',
+    '04': 'Avril',
+    '05': 'Mai',
+    '06': 'Juin',
+    '07': 'Juillet',
+    '08': 'Août',
+    '09': 'Septembre',
+    '10': 'Octobre',
+    '11': 'Novembre',
+    '12': 'Décembre'
+} %}
+
+<p><strong>Date :</strong>
+    {{ jours[rdv.date|date('l')] }}
+    {{ rdv.date|date('d') }}
+    {{ mois[rdv.date|date('m')] }}
+    {{ rdv.date|date('Y') }}
+</p>
+<p><strong>Heure Début:</strong> {{ rdv.hourOfRdv|date('H:i') }}</p>
+<p><strong>Heure Fin:</strong> {{ rdv.endOfRdv|date('H:i') }}</p>
+
+<hr class="my-4">
+
+<h3 class="text-lg font-semibold">Client</h3>
+<p>Nom : {{ rdv.user.firstname }} {{ rdv.user.lastname }}</p>
+<p>Email : {{ rdv.user.email }}</p>
+<p>Téléphone : {{ rdv.user.phoneNumber }}</p>
+<p>Adresse : {{ rdv.user.address }}</p>
+
+<hr class="my-4">
+
+<h3 class="text-lg font-semibold">Commerce</h3>
+<p>Nom du pro : {{ rdv.office.user.lastName }} {{ rdv.office.user.firstName }}</p>
+<p>Nom du commerce : {{ rdv.office.businessName }}</p>
+
+<p>Adresse : {{ rdv.office.officeAddress }}</p>
+
+<p>Téléphone : {{ rdv.office.Officephone }}</p>
+<p>Prestations :</p>
+<ul>
+{% for typeOfService in rdv.officeTypeOfServiceId.typeOfServiceId %}
+    <li>{{ typeOfService.specialityId.name }} {{ typeOfService.name }}</li>
+{% else %}
+    <li>Aucune prestation</li>
+{% endfor %}
+</ul>
+
+</div>
+{% endblock %}

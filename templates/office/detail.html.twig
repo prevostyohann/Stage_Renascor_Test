@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Office Details{% endblock %}
+
+{% block body %}
+<div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+
+    {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'office_show' : null) %}
+    {% if back_route %}
+        <a href="{{ path(back_route) }}" class="flex items-center text-blue-700 font-semibold hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+        </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
+    {% endif %}
+</div>  
+
+<h1>Mon Bureau</h1>
+
+<div class="border p-4 rounded mb-4">
+    <p><strong>Nom Commercial :</strong> {{ office.businessName }}</p>
+    <p><strong>SIRET :</strong> {{ office.siret }}</p>
+    <p><strong>Téléphone :</strong> {{ office.officePhone }}</p>
+    <p><strong>Adresse :</strong> {{ office.officeAddress }}</p>
+    <p><strong>Description :</strong> {{ office.description }}</p>
+   
+ <a class="flex items-center text-green-700 font-semibold hover:underline border border-green-700 w-38 rounded-lg mt-2 p-2"  href="{{ path('time_add', {'id_off': office.id}) }}">Ajout Horaire</a>
+
+</div>
+
+ 
+{% if timeConf is not empty %}
+
+
+    {% for timeConfs in timeConf %}
+        <div class="border p-4 rounded mb-4">
+          
+        <p><strong>Jour :</strong> {{ timeConfs.day.value }}</p>
+        <p><strong>Ouverture :</strong> {{ timeConfs.openTime.format('H:i') }}</p>
+        <p><strong>Fermeture :</strong> {{ timeConfs.closeTime.format('H:i') }}</p>
+         <p><strong>Interval :</strong> {{ timeConfs.rdvInterval.i}} minutes</p>
+ <a class="flex items-center text-green-700 font-semibold hover:underline border border-green-700 rounded-lg w-38 mt-2 p-2"  href="{{ path('time_edit', {'id_off': office.id ,'id': timeConfs.id}) }}">Modifier Horaire</a>
+ <form method="post" action="{{ path('time_delete', { 'id_off': office.id, 'id': timeConfs.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet horaire ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete_time_' ~ timeConfs.id) }}">
+    <button class="text-red-600 font-semibold border border-red-600 rounded-lg p-2 mt-2 hover:bg-red-100">Supprimer</button>
+</form>
+        
+
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Aucun horaire d'enregister pour le moment.</p>
+{% endif %}
+
+{% endblock %}

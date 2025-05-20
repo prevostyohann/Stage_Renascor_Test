@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes avis{% endblock %}
+
+{% block body %}
+<div class="p-8 max-w-3xl mx-auto font-sans">
+<div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+
+    {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
+
+    {% if back_route %}
+        <a href="{{ path(back_route) }}" class="flex items-center text-blue-700 font-semibold hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+        </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
+    {% endif %}
+</div>
+    <h1 class="text-2xl font-bold mb-6 text-purple-700">⭐ Mes avis</h1>
+
+    {% if reviews is empty %}
+        <p class="text-gray-600">Vous n’avez encore laissé aucun avis.</p>
+    {% else %}
+        <div class="space-y-4">
+            {% for review in reviews %}
+                <div class="p-4 bg-gray-100 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-yellow-500 font-bold">Note : {{ review.note.value }}/5</span>
+                        <span class="text-sm text-gray-600">{{ review.createdAt|date('d/m/Y à H:i') }}</span>
+                    </div>
+                    {% if review.comment %}
+                        <p class="mt-2">{{ review.comment }}</p>
+                    {% endif %}
+                    <p class="text-sm text-gray-500 mt-1">Pour : {{ review.getOfficeId().businessName }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

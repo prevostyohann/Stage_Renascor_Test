@@ -3,7 +3,8 @@
 {% block title %}Office{% endblock %}
 
 {% block body %}
-   <div class="flex items-center justify-between mt-6">
+   <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+
     {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
 
     {% if back_route %}
@@ -13,6 +14,7 @@
             </svg>
             Back
         </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
     {% endif %}
 
     <a href="{{ path('office_add') }}" class="flex items-center text-green-700 font-semibold hover:underline">
@@ -23,8 +25,7 @@
 </a>
 </div>  
 
-
-        {% if offices is not empty %}
+{% if offices is not empty %}
     <h1>Mes Bureaux</h1>
 
     {% for office in offices %}
@@ -34,6 +35,9 @@
             <p><strong>Téléphone :</strong> {{ office.officePhone }}</p>
             <p><strong>Adresse :</strong> {{ office.officeAddress }}</p>
             <p><strong>Description :</strong> {{ office.description }}</p>
+
+        <a class="flex items-center text-green-700 font-semibold hover:underline" href="{{ path('office_details', {'id_off': office.id}) }}">Détails</a>
+
         </div>
     {% endfor %}
 {% else %}

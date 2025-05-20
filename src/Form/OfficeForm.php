@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Profession;
 
 class OfficeForm extends AbstractType
 {
@@ -35,6 +37,19 @@ class OfficeForm extends AbstractType
             
             
             ->add('description', TextareaType::class)
+            ->add('professions', EntityType::class, [
+            'class' => Profession::class,
+            'choice_label' => 'name',
+            'label' => 'Profession',
+            'placeholder' => 'Choisissez une profession',
+            'expanded' => false,
+            'multiple' => true,
+            'attr' => [
+                'class' => 'block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500',
+            ],
+        ])
+
+
             ->add('officePostalCode', HiddenType::class)
             ->add('officeCity', HiddenType::class)
             ->add('officeLatitude', HiddenType::class)

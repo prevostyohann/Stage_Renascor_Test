@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250506165953 extends AbstractMigration
+final class Version20250520023141 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,10 @@ final class Version20250506165953 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE office ADD office_street_name VARCHAR(255) DEFAULT NULL, CHANGE office_country office_country VARCHAR(30) DEFAULT NULL, CHANGE score score INT DEFAULT NULL, CHANGE vip vip TINYINT(1) DEFAULT NULL
+            ALTER TABLE rdv ADD CONSTRAINT FK_10C31F867C6DED13 FOREIGN KEY (office_type_of_service_id) REFERENCES office_type_of_service (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE INDEX IDX_10C31F867C6DED13 ON rdv (office_type_of_service_id)
         SQL);
     }
 
@@ -29,7 +32,10 @@ final class Version20250506165953 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE office DROP office_street_name, CHANGE office_country office_country VARCHAR(30) NOT NULL, CHANGE score score INT NOT NULL, CHANGE vip vip TINYINT(1) NOT NULL
+            ALTER TABLE rdv DROP FOREIGN KEY FK_10C31F867C6DED13
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP INDEX IDX_10C31F867C6DED13 ON rdv
         SQL);
     }
 }

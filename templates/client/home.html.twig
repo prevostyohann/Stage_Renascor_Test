@@ -4,14 +4,29 @@
 
 {% block body %}
 <div class="flex flex-col items-center p-8 font-sans">
-    <div class="text-4xl text-purple-700 mb-4">🍃</div>
+    <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
     <div class="font-bold text-2xl mb-8">Menu</div>
 
-        <span class="text-purple-700 text-xl mr-4">🔍</span> Rechercher
+        {# TEST     TEST    TEST#}{# TEST     TEST    TEST#}
 
-        <span class="text-purple-700 text-xl mr-4">✅</span> Mes réservations
+        <a href="{{ path('app_office_list') }}" class="flex items-center text-lg mb-4 text-purple-900 hover:translate-x-1 transition-transform">
+    <span class="text-purple-700 text-xl mr-4">🔍</span> Rechercher
+        </a>
 
-        <span class="text-purple-700 text-xl mr-4">⭐</span> Avis
+        {# TEST     TEST    TEST#}{# TEST     TEST    TEST#}
+
+        <a href="{{ path('client_appointments') }}" class="flex items-center text-lg mb-4 text-purple-900 hover:translate-x-1 transition-transform">
+    <span class="text-purple-700 text-xl mr-4">✅</span> Mes réservations
+        </a>
+
+
+        {# TEST     TEST    TEST#}{# TEST     TEST    TEST#}
+
+        <a href="{{ path('client_reviews') }}" class="flex items-center text-lg mb-4 text-purple-900 hover:translate-x-1 transition-transform">
+            <span class="text-purple-700 text-xl mr-4">⭐</span> Avis
+        </a>
+
+        {# TEST     TEST    TEST#}{# TEST     TEST    TEST#}
 
     <a href="{{ path('profil_show') }}" class="flex items-center text-lg mb-4 text-purple-900 hover:translate-x-1 transition-transform">
         <span class="text-purple-700 text-xl mr-4">👤</span> Compte
@@ -24,5 +39,6 @@
         <a href="{{ path('app_settings') }}" class="flex items-center text-lg mb-4 text-purple-900 hover:translate-x-1 transition-transform">
         <span class="text-purple-700 text-xl mr-4">⚙️</span> Paramètres
         </a>
+        
 </div>
 {% endblock %}

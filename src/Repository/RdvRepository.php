@@ -6,6 +6,9 @@ use App\Entity\Rdv;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+//custom query test:
+use App\Entity\User;
+
 /**
  * @extends ServiceEntityRepository<Rdv>
  */
@@ -14,6 +17,17 @@ class RdvRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Rdv::class);
+    }
+
+    //Custom Query test :
+    public function findForPro(User $pro): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.office', 'o')
+            ->andWhere('o.user = :pro')
+            ->setParameter('pro', $pro)
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

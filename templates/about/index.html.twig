@@ -5,7 +5,8 @@
 {% block body %}
     <div class="container my-5">
     <div class="grid grid-cols-1 gap-4">
-        <div class="flex items-center justify-between mt-6">
+        <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+
     {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
 
     {% if back_route %}
@@ -15,6 +16,7 @@
             </svg>
             Back
         </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
     {% endif %}
 </div>
         <h1 class="mb-4">À propos de SocioConnect</h1>
