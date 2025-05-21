@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel Avis{% endblock %}
+
+{% block body %}
+<div class="grid grid-cols-1 gap-4">
+        <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+
+    {% set back_route = is_granted('ROLE_CLIENT') ? 'app_office_show' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
+
+    {% if back_route %}
+        <a href="{{ path(back_route, {'id': office.id}) }}" class="flex items-center text-blue-700 font-semibold hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+        </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
+    {% endif %}
+</div>
+
+    <!-- Formulaire d'avis -->
+    <div class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-md">
+    
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Laisser un avis pour <span class="text-blue-700">{{ office.businessName }}</span></h2>
+
+        {{ form_start(form) }}
+            <div class="flex flex-col gap-2">
+    <label for="{{ form.note.vars.id }}" class="font-medium text-gray-700">{{ form_label(form.note) }}</label>
+    <div class="flex flex-col space-y-2 mb-3">
+        {% for child in form.note %}
+            <label class="flex items-center space-x-2">
+                {{ form_widget(child) }}
+                {{ form_label(child) }}
+            </label>
+        {% endfor %}
+    </div>
+    {{ form_errors(form.note) }}
+</div>
+
+                {{ form_row(form.comment, {'attr': {'class': 'w-full resize-none mt-4'}}) }}
+
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow transition duration-150">
+                    Envoyer
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

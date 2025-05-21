@@ -9,11 +9,20 @@ use App\Form\OfficeForm;
 use App\Form\TimeConfigurationForm;
 use App\Repository\OfficeRepository;
 use App\Repository\TimeConfigurationRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\OfficeClosure;
+use App\Form\OfficeClosureFormType;
+use App\Repository\OfficeClosureRepository;
+use App\Entity\OfficeTypeOfService;
+use App\Form\OfficeTypeOfServiceType;
+use App\Entity\TypeOfService;
+use App\Entity\Speciality;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class OfficeController extends AbstractController
 {
@@ -145,7 +154,7 @@ final class OfficeController extends AbstractController
 
             $this->addFlash('success', 'Configuration horaire enregistrée.');
 
-            return $this->redirectToRoute('office_details', ['id_off' => $id_off]);
+            return $this->redirectToRoute('schedules', ['id_off' => $id_off]);
         }
 
         return $this->render('office/timeConfForm.html.twig', [
@@ -256,7 +265,7 @@ final class OfficeController extends AbstractController
                 $this->addFlash('error', 'Jeton CSRF invalide.');
             }
 
-            return $this->redirectToRoute('office_details', ['id_off' => $id_off]);
+            return $this->redirectToRoute('schedules', ['id_off' => $id_off]);
         }
 
         /* TEST     TEST     TEST */
@@ -271,14 +280,176 @@ final class OfficeController extends AbstractController
             ]);
         } */
 
-        #[Route('/office/{id}', name: 'app_office_show', methods: ['GET'])]
-        public function show(Office $office): Response
-        {
-            return $this->render('test/show.html.twig', [
-                'office' => $office,
-            ]);
-        }
+        #[Route('/office/{id}', name: 'app_office_show')]
+public function show(Office $office, EntityManagerInterface $em): Response
+{
+    // Récupère toutes les liaisons OfficeTypeOfService
+    $allServices = $em->getRepository(OfficeTypeOfService::class)->findAll();
+
+    // Filtre les services associés à ce bureau
+    $services = array_filter($allServices, function (OfficeTypeOfService $service) use ($office) {
+        return $service->getOfficeId()->contains($office);
+    });
+
+    return $this->render('search/show.html.twig', [
+        'office' => $office,
+        'services' => $services,
+    ]);
+}
+
 
         /* TEST     TEST     TEST */
+
+
+        #[Route('office/{id_off}/addClosure', name: 'add_closure')]
+                public function officeClosure(int $id_off, Request $request, EntityManagerInterface $entityManager): Response
+                {
+                    $office = $entityManager->getRepository(Office::class)->find($id_off);
+
+                    if (!$office) {
+                        throw $this->createNotFoundException('Bureau non trouvé');
+                    }
+
+                    $officeClosure = new OfficeClosure();
+                    $officeClosure->setOffice($office); 
+
+                    $form = $this->createForm(OfficeClosureFormType::class, $officeClosure);
+                    $form->handleRequest($request);
+
+                    if ($form->isSubmitted() && $form->isValid()) {
+                        $entityManager->persist($officeClosure);
+                        $entityManager->flush();
+
+                        $this->addFlash('success', 'Fermeture ajoutée avec succès.');
+                        return $this->redirectToRoute('office_details', ['id_off' => $id_off]);
+                    }
+
+                    return $this->render('office/closureForm.html.twig', [
+                        'form' => $form->createView(),
+                        'office' => $office,
+                    ]);
+                }
+
+            #[Route('/api/services/{specialityId}', name: 'api_get_services_by_speciality', methods: ['GET'])]
+                public function getServicesBySpeciality(int $specialityId, EntityManagerInterface $em): JsonResponse
+                {
+                    $services = $em->getRepository(TypeOfService::class)->findBy([
+                        'speciality' => $specialityId
+                    ]);
+
+                    $data = [];
+                    foreach ($services as $service) {
+                        $data[] = [
+                            'id' => $service->getId(),
+                            'name' => $service->getName()
+                        ];
+                    }
+
+                    return new JsonResponse($data);
+                }
+
+
+        #[Route('/office/{id_off}/addService', name: 'service_add')]
+public function addService(
+    int $id_off,
+    Request $request,
+    EntityManagerInterface $em
+): Response {
+    $office = $em->getRepository(Office::class)->find($id_off);
+    if (!$office) {
+        throw $this->createNotFoundException('Bureau introuvable.');
+    }
+
+    $officeTypeOfService = new OfficeTypeOfService();
+    $officeTypeOfService->addOfficeId($office);
+
+    $form = $this->createForm(OfficeTypeOfServiceType::class, $officeTypeOfService, [
+        'em' => $em
+    ]);
+
+    $form->handleRequest($request);
+
+   if ($form->isSubmitted() && $form->isValid()) {
+    // Récupérer la durée sous forme de string (ex: 00:30:00)
+    $durationString = $form->get('duration')->getData();
+
+    if ($durationString) {
+        try {
+            // Par exemple, si c'est un DateTimeInterface, on peut récupérer l'heure et les minutes
+            if ($durationString instanceof \DateTimeInterface) {
+                // Transforme en intervalle
+                $interval = new \DateInterval(sprintf(
+                    'PT%dH%dM%dS',
+                    (int)$durationString->format('H'),
+                    (int)$durationString->format('i'),
+                    (int)$durationString->format('s')
+                ));
+            } elseif (is_string($durationString)) {
+                // Si tu souhaites passer à du format texte (HH:MM:SS), tu peux l'exploser ici comme dans le contrôleur timeAdd
+                $parts = explode(':', $durationString);
+                if (count($parts) === 3) {
+                    $interval = new \DateInterval(sprintf('PT%dH%dM%dS', $parts[0], $parts[1], $parts[2]));
+                } else {
+                    throw new \Exception('Format invalide');
+                }
+            } else {
+                throw new \Exception('Format invalide');
+            }
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Format de durée invalide.');
+            return $this->redirectToRoute('service_add', ['id_off' => $id_off]);
+        }
+
+        // Exemple : tu stockes l'intervalle dans ton entité, méthode à adapter selon ton modèle
+        $officeTypeOfService->setDuration($interval);
+    }
+    
+    $em->persist($officeTypeOfService);
+    $em->flush();
+
+    $this->addFlash('success', 'Le service a été enregistré avec succès.');
+    return $this->redirectToRoute('services',['id_off' => $id_off]);
+    
+}
+
+
+    return $this->render('office/serviceAdd.html.twig', [
+        'office' => $office,
+        'form' => $form->createView()
+    ]);
+    
+}
+
+    #[Route('office/{id_off}/Closure', name: 'closure', methods: ['GET'])]
+public function showClosure(int $id_off, EntityManagerInterface $em): Response
+{
+    $office = $em->getRepository(Office::class)->find($id_off);
+
+    return $this->render('Office/closure.html.twig', [
+        'office' => $office,
+    ]);
+}
+
+    #[Route('office/{id_off}/Schedules', name: 'schedules', methods: ['GET'])]
+public function showSchedules(int $id_off, EntityManagerInterface $em, TimeConfigurationRepository $TimeConfigurationRepository ): Response
+{
+    $office = $em->getRepository(Office::class)->find($id_off);
+    $timeConf = $TimeConfigurationRepository->findBy(['office' => $office]);
+
+    return $this->render('Office/schedules.html.twig', [
+        'office' => $office,
+        'timeConf' => $timeConf,
+    ]);
+}
+
+    #[Route('office/{id_off}/Services', name: 'services', methods: ['GET'])]
+public function showServices(int $id_off, EntityManagerInterface $em): Response
+{
+    $office = $em->getRepository(Office::class)->find($id_off);
+
+    return $this->render('Office/services.html.twig', [
+        'office' => $office,
+    ]);
+}
 
 }

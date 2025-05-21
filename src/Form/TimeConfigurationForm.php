@@ -33,7 +33,7 @@ class TimeConfigurationForm extends AbstractType
                 'input' => 'datetime',
             ])
             ->add('rdvInterval', TextType::class, [
-                'label' => 'Durée des rendez-vous (ex: 00:30:00)',
+                'label' => 'Durée des rendez-vous (ex: 00:30:00 pour 30 minutes)',
                 'required' => false,
                 'mapped' => false, // on va convertir manuellement
             ]);

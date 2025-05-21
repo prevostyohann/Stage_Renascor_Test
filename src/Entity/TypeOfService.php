@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: TypeOfServiceRepository::class)]
 class TypeOfService
 {
@@ -77,6 +78,18 @@ class TypeOfService
     }
 
     public function setSpecialityId(?Speciality $speciality): static
+    {
+        $this->speciality = $speciality;
+
+        return $this;
+    }
+
+    public function getSpeciality(): ?Speciality
+    {
+        return $this->speciality;
+    }
+
+    public function setSpeciality(?Speciality $speciality): static
     {
         $this->speciality = $speciality;
 

@@ -8,6 +8,7 @@ use App\Traits\TimestampableTrait; //pour createAt et updateAt auto
 
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: CertificateOwnedRepository::class)]
 class CertificateOwned
 {

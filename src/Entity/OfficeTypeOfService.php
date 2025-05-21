@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use App\Traits\TimestampableTrait; //pour createAt et updateAt auto
 
-
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: OfficeTypeOfServiceRepository::class)]
 class OfficeTypeOfService
 {
@@ -26,7 +26,7 @@ class OfficeTypeOfService
     #[ORM\Column(length: 15)]
     private ?string $currency = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'dateinterval', nullable: false)]
     private ?\DateInterval $duration = null;
 
     /**
@@ -88,7 +88,7 @@ class OfficeTypeOfService
         return $this->duration;
     }
 
-    public function setDuration(\DateInterval $duration): static
+    public function setDuration(?\DateInterval $duration): self
     {
         $this->duration = $duration;
 
@@ -104,6 +104,20 @@ class OfficeTypeOfService
     }
 
     public function addOfficeId(Office $officeId): static
+    {
+        if (!$this->office->contains($officeId)) {
+            $this->office->add($officeId);
+        }
+
+        return $this;
+    }
+
+    public function getOffice(): Collection
+    {
+        return $this->office;
+    }
+
+    public function addOffice(Office $officeId): static
     {
         if (!$this->office->contains($officeId)) {
             $this->office->add($officeId);
@@ -172,4 +186,17 @@ class OfficeTypeOfService
 
         return $this;
     }
+
+
+    public function getTypeOfService(): Collection
+{
+    return $this->typeOfService;
+}
+
+public function setTypeOfService(Collection $typeOfService): static
+{
+    $this->typeOfService = $typeOfService;
+
+    return $this;
+}
 }

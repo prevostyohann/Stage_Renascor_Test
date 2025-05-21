@@ -11,7 +11,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
-                Retour
+                Back
             </a>
             <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
         {% endif %}
@@ -38,7 +38,8 @@
     <div class="mt-6 space-y-4 px-4">
         {% if offices is not empty %}
             {% for office in offices %}
-                <div class="bg-white rounded-xl shadow p-4 flex items-center space-x-4 hover:shadow-md transition">
+                <a href="{{ path('app_office_show', {'id': office.id}) }}">
+                <div class="bg-white rounded-xl shadow p-4 flex items-center space-x-4 hover:shadow-md transition mb-2">
                     <img src="{{ office.profilePhotoLink }}" alt="{{ office.businessName }}" class="w-16 h-16 rounded-full object-cover">
                     <div class="flex-1">
                         <h2 class="font-bold text-lg">{{ office.businessName }}</h2>
@@ -52,12 +53,13 @@
                             {{ office.officeAddress }}
                         </p>
                     </div>
-                    <a href="{{ path('app_office_show', {'id': office.id}) }}">
+                    
                         <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
-                    </a>
+                    
                 </div>
+                </a>
             {% endfor %}
         {% else %}
             <p class="text-center text-gray-500">Aucun commerce disponible pour le moment.</p>

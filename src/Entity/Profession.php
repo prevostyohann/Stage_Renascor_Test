@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection; //pour createAt et updateAt auto
 
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: ProfessionRepository::class)]
 class Profession
 {

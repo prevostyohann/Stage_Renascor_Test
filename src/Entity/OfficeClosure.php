@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use App\Traits\TimestampableTrait; //pour createAt et updateAt auto
 
-
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: OfficeClosureRepository::class)]
 class OfficeClosure
 {
@@ -64,6 +64,18 @@ class OfficeClosure
     }
 
     public function setOfficeId(?Office $office): static
+    {
+        $this->office = $office;
+
+        return $this;
+    }
+
+    public function getOffice(): ?Office
+    {
+        return $this->office;
+    }
+
+    public function setOffice(?Office $office): static
     {
         $this->office = $office;
 
