@@ -248,7 +248,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->streetNumber;
     }
 
-    public function setStreetNumber(string $streetNumber): static
+    public function setStreetNumber(?string $streetNumber): static
     {
         $this->streetNumber = $streetNumber;
 

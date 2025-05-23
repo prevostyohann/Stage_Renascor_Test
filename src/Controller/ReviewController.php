@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ReviewController extends AbstractController
 {
-    #[Route('/office/{id}/review', name: 'app_review_new')]
+   #[Route('/office/{id}/review', name: 'app_review_new')]
 public function new(
     Request $request,
     Office $office,
@@ -36,7 +36,27 @@ public function new(
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        // On persiste l'avis
         $em->persist($review);
+        $em->flush();
+
+        // --- CALCUL DE LA MOYENNE DES NOTES ---
+        // Récupérer tous les avis de cet office
+        $reviews = $em->getRepository(Review::class)->findBy(['office' => $office]);
+
+        $total = 0;
+        $count = count($reviews);
+
+        foreach ($reviews as $rev) {
+            $total += (float) $rev->getNote()->value;  // convertir la valeur string en float
+        }
+
+        $average = $count > 0 ? round($total / $count, 1) : 0;
+
+        // Mettre à jour le score de l'office
+        $office->setScore($average);
+
+        $em->persist($office);
         $em->flush();
 
         $this->addFlash('success', 'Avis enregistré avec succès !');

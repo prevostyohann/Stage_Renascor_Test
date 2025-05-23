@@ -25,6 +25,28 @@
 </a>
 </div>  
 
+<h2 class="flex justify-center border border-purple-500 rounded-lg font-bold mb-8 mx-2">Dates de fermeture</h2>
 
+{% if closures is not empty %}
+    <ul class="list-disc pl-6">
+        {% for closure in closures %}
+            <li class="flex items-center justify-between border-2 border-purple-700 rounded-lg font-bold mb-6 mr-6 px-4 py-2">
+    <div>
+        {{ closure.start|date('d/m/Y H:i') }}<br> Au <br>{{ closure.end|date('d/m/Y H:i') }}
+    </div>
+
+    <form method="post" 
+          action="{{ path('delete_closure', {'id': closure.id}) }}" 
+          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette fermeture ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_closure_' ~ closure.id) }}">
+        <button class="text-red-500 hover:underline" type="submit">Supprimer</button>
+    </form>
+</li>
+
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="flex justify-center border border-purple-500 rounded-lg font-bold mb-8 mx-2" >Aucune fermeture enregistrée pour ce bureau.</p>
+{% endif %}
 
 {% endblock %}

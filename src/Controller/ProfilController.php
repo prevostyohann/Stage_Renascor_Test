@@ -51,11 +51,12 @@ public function show(): Response
 
             $this->addFlash('success', 'Profil mis à jour avec succès.');
 
-            return $this->redirectToRoute('profil_edit');
+            return $this->redirectToRoute('profil_show');
         }
 
         return $this->render('profil/edit.html.twig', [
             'form' => $form->createView(),
+            'user' => $user,
         ]);
     }
 }

@@ -3,69 +3,61 @@
 {% block title %}Modifier mon profil{% endblock %}
 
 {% block body %}
+<div class="p-8 max-w-3xl mx-auto font-sans bg-gray-50 min-h-screen">
 
-{% for message in app.flashes('success') %}
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-        {{ message }}
-    </div>
-{% endfor %}
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
+            {{ message }}
+        </div>
+    {% endfor %}
 
     {{ form_start(form) }}
-        <div class="grid grid-cols-1 gap-4">
-        <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
 
-    <a href="{{ path('profil_show') }}" class="flex items-center text-blue-700 font-semibold hover:underline">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Back
-    </a>
-    <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
-
-    {# <div class="text-purple-600">
-        <!-- Icône centrale personnalisée -->
-        <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M12 2C10 7 14 7 14 12s-4 5-2 10" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M12 2C14 7 10 7 10 12s4 5 2 10" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-    </div> #}
-
-    <button type="submit" class="text-blue-700 font-semibold hover:underline flex items-center mr-1">
-        Save
+    <div class="sticky top-0 z-50 bg-white flex items-center justify-between py-4 border-b border-gray-200 mb-6">
+        <a href="{{ path('profil_show') }}" class="flex items-center text-blue-700 font-semibold hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Retour
+        </a>
+        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="h-10 mx-auto">
+        <button type="submit" class="text-blue-700 font-semibold hover:underline flex items-center mr-1">
+        Sauvegarder 💾
         
     </button>
+    </div>
+
+    <div class="space-y-4 bg-white p-6 border-2 border-purple-700 rounded-xl shadow">
+        <h1 class="text-2xl font-bold text-purple-700 mb-4 text-center">✏️ Modifier mon profil</h1>
+
+        {% for field in [
+            form.email,
+            form.username,
+            form.firstName,
+            form.lastName,
+            form.streetNumber,
+            form.streetName,
+            form.addressComplement,
+            form.address,
+            form.postalCode,
+            form.city,
+            form.latitude,
+            form.longitude,
+            form.birthDate,
+            form.phoneNumber,
+            form.plainPassword.first,
+            form.plainPassword.second
+        ] %}
+            {{ form_row(field, {
+                'attr': {
+                    'class': 'w-full px-4 py-3 border border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                }
+            }) }}
+        {% endfor %}
+    </div>
+
+    {{ form_end(form) }}
 </div>
-            {% for field in [
-                form.email,
-                form.username,
-                form.firstName,
-                form.lastName,
-                form.streetNumber,
-                form.streetName,
-                form.addressComplement,
-                form.address,
-                form.postalCode,
-                form.city,
-                form.latitude,
-                form.longitude,
-                form.birthDate,
-                form.phoneNumber,
-                form.plainPassword.first,
-                form.plainPassword.second
-            ] %}
-                {{ form_row(field, {
-                    'attr': {
-                        'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-                    }
-                }) }}
-                
-            {% endfor %}
-        </div>
-
-        
-
-        {{ form_end(form) }}
-   
 {% endblock %}
 
 {% block javascripts %}
@@ -80,65 +72,64 @@
             padding: 0;
             margin: 0;
             list-style: none;
-            width: 50%;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-top: none;
         }
         .autocomplete-suggestions li {
-            padding: 8px;
+            padding: 8px 12px;
         }
         .autocomplete-suggestions li:hover {
-            background-color: #eee;
+            background-color: #f3f4f6;
         }
     </style>
 
     <script>
-function initAddressAutocomplete() {
-    const input = document.querySelector('[data-autocomplete="address"]');
-    if (!input) return;
+        function initAddressAutocomplete() {
+            const input = document.querySelector('[data-autocomplete="address"]');
+            if (!input) return;
 
-    input.setAttribute('autocomplete', 'off');
+            input.setAttribute('autocomplete', 'off');
 
-    const suggestions = document.createElement('ul');
-    suggestions.classList.add('autocomplete-suggestions');
-    input.parentNode.style.position = 'relative';
-    input.parentNode.appendChild(suggestions);
+            const suggestions = document.createElement('ul');
+            suggestions.classList.add('autocomplete-suggestions');
+            input.parentNode.style.position = 'relative';
+            input.parentNode.appendChild(suggestions);
 
-    input.addEventListener('input', function () {
-        const query = this.value;
-        if (query.length < 3) {
-            suggestions.innerHTML = '';
-            return;
+            input.addEventListener('input', function () {
+                const query = this.value;
+                if (query.length < 3) {
+                    suggestions.innerHTML = '';
+                    return;
+                }
+
+                fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestions.innerHTML = '';
+                        data.features.forEach(feature => {
+                            const li = document.createElement('li');
+                            li.textContent = feature.properties.label;
+                            li.style.cursor = 'pointer';
+
+                            li.addEventListener('mousedown', () => {
+                                input.value = feature.properties.label;
+                                document.querySelector('#user_profile_postalCode').value = feature.properties.postcode || '';
+                                document.querySelector('#user_profile_city').value = feature.properties.city || '';
+                                document.querySelector('#user_profile_latitude').value = feature.geometry.coordinates[1] || '';
+                                document.querySelector('#user_profile_longitude').value = feature.geometry.coordinates[0] || '';
+                                document.querySelector('#user_profile_streetNumber').value = feature.properties.housenumber || '';
+                                document.querySelector('#user_profile_streetName').value = feature.properties.street || '';
+                                suggestions.innerHTML = '';
+                            });
+
+                            suggestions.appendChild(li);
+                        });
+                    });
+            });
         }
 
-        fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=5')
-            .then(response => response.json())
-            .then(data => {
-                suggestions.innerHTML = '';
-                data.features.forEach(feature => {
-                    const li = document.createElement('li');
-                    li.textContent = feature.properties.label;
-                    li.style.cursor = 'pointer';
-
-                    li.addEventListener('mousedown', () => {
-                        input.value = feature.properties.label;
-                        document.querySelector('#user_profile_postalCode').value = feature.properties.postcode || '';
-                        document.querySelector('#user_profile_city').value = feature.properties.city || '';
-                        document.querySelector('#user_profile_latitude').value = feature.geometry.coordinates[1] || '';
-                        document.querySelector('#user_profile_longitude').value = feature.geometry.coordinates[0] || '';
-                        document.querySelector('#user_profile_streetNumber').value = feature.properties.housenumber || '';
-                        document.querySelector('#user_profile_streetName').value = feature.properties.street || '';
-                        suggestions.innerHTML = '';
-                    });
-
-                    suggestions.appendChild(li);
-                });
-            });
-    });
-}
-
-document.addEventListener('DOMContentLoaded', initAddressAutocomplete);
-document.addEventListener('turbo:load', initAddressAutocomplete);
-</script>
-
-
-
+        document.addEventListener('DOMContentLoaded', initAddressAutocomplete);
+        document.addEventListener('turbo:load', initAddressAutocomplete);
+    </script>
 {% endblock %}

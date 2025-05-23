@@ -22,13 +22,53 @@
         <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
     {% endif %}
 
-    <a href="{{ path('service_add', {'id_off': office.id}) }}" class="flex items-center text-green-700 font-semibold hover:underline">
+    <a href="{{ path('service_add', {'id_off': office.id}) }}" class="flex items-center md-2 text-green-700 font-semibold hover:underline">
+    
+    Ajout Prestations
     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
     </svg>
-    Ajout Prestations
 </a>
 </div>  
+
+<h2 class="flex justify-center border border-purple-500 rounded-lg font-bold mb-8 mx-2">Liste des prestations :</h2>
+
+<ul>
+    {% for ots in officeTypeOfServices %}
+        {% for service in ots.typeOfService %}
+            <li class="flex items-center justify-between border-2 border-purple-700 rounded-lg font-bold mb-6 mx-6 px-6 py-4">
+                <div>
+                    <div class="text-purple-700 font-semibold">
+                        {{ service.speciality.name }} {{ service.name }}
+                    </div>
+                    <p class="font-normal text-gray-600 mt-1">
+                        <strong>Prix :</strong> {{ ots.price }} {{ ots.currency }}
+                    </p>
+                    <p class="font-normal text-gray-600">
+                        <strong>Durée :</strong>
+                        {% if ots.duration %}
+                            {{ ots.duration.h ~ ' h ' ~ ots.duration.i ~ ' min' }}
+                        {% else %}
+                            Non spécifiée
+                        {% endif %}
+                    </p>
+                </div>
+
+                <form method="post" 
+                      action="{{ path('delete_service', {'id': ots.id}) }}" 
+                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette prestation ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_service_' ~ ots.id) }}">
+                    <button class="text-red-500 hover:underline " type="submit">Supprimer</button>
+                </form>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li>Aucune prestation enregistrée pour ce cabinet.</li>
+    {% endfor %}
+</ul>
+
+
+
 
 
 

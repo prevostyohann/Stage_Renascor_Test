@@ -3,40 +3,44 @@
 {% block title %}À propos - SocioConnect{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-    <div class="grid grid-cols-1 gap-4">
-        <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+<div class="p-8 max-w-3xl mx-auto font-sans">
 
-    {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
+    <div class="sticky top-0 z-50 bg-white flex items-center justify-between mt-0 py-4 border-b border-gray-200">
+        {% set back_route = is_granted('ROLE_CLIENT') ? 'client_home' : (is_granted('ROLE_PRO') ? 'pro_home' : null) %}
 
-    {% if back_route %}
-        <a href="{{ path(back_route) }}" class="flex items-center text-blue-700 font-semibold hover:underline">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-        </a>
-        <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
-    {% endif %}
-</div>
-        <h1 class="mb-4">À propos de SocioConnect</h1>
+        {% if back_route %}
+            <a href="{{ path(back_route) }}" class="flex items-center text-blue-700 font-semibold hover:underline ml-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Retour
+            </a>
+            <img src="{{ asset('uploads/BloomCare.png') }}" alt="Logo" class="mx-auto h-10">
+        {% endif %}
+    </div>
 
+    <h1 class="flex justify-center border border-purple-500 rounded-lg font-bold text-lg text-purple-700 mb-8 mx-2 px-4 py-2">
+        ❤️ À propos de SocioConnect
+    </h1>
+
+    <div class="text-gray-800 space-y-4 px-2">
         <p><strong>SocioConnect</strong> est la première application dédiée à la mise en relation entre patients fragilisés (notamment en parcours de soins comme l’oncologie) et des professionnels du soin esthétique qualifiés, comme les socio-esthéticiennes ou socio-coiffeurs.</p>
 
         <p><strong>Notre mission est simple :</strong><br>
         Offrir un moment de bien-être, d’écoute et de douceur, accessible à tous, au bon moment et au bon endroit.</p>
 
-        <h2 class="mt-4">Nos valeurs :</h2>
-        <ul>
+        <h2 class="text-lg font-semibold mt-6">🌱 Nos valeurs</h2>
+        <ul class="list-disc list-inside space-y-1">
             <li><strong>Bienveillance :</strong> Chaque interaction sur SocioConnect repose sur le respect, l’écoute et l’empathie.</li>
             <li><strong>Accessibilité :</strong> L’application est conçue pour être simple, intuitive, et adaptée à tous les âges, même dans les périodes difficiles.</li>
             <li><strong>Confiance :</strong> Les professionnels présents sur la plateforme sont formés, engagés et sélectionnés avec soin pour garantir un accompagnement de qualité.</li>
             <li><strong>Dignité & estime de soi :</strong> Nous croyons profondément en la force du toucher, du regard et du soin pour restaurer la confiance en soi.</li>
         </ul>
 
-        <h2 class="mt-4">💡 Pourquoi cette application ?</h2>
+        <h2 class="text-lg font-semibold mt-6">💡 Pourquoi cette application ?</h2>
         <p>Parce que le bien-être fait partie intégrante du soin, SocioConnect permet de prendre rendez-vous en quelques clics avec des professionnels formés à l’accompagnement des personnes malades ou en convalescence.</p>
 
         <p>Nous mettons en lumière une esthétique du cœur, humaine, respectueuse, profondément utile.</p>
     </div>
+</div>
 {% endblock %}

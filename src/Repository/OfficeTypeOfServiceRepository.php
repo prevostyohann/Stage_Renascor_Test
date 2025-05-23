@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Office;
 use App\Entity\OfficeTypeOfService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
 
 /**
  * @extends ServiceEntityRepository<OfficeTypeOfService>
@@ -15,6 +17,16 @@ class OfficeTypeOfServiceRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, OfficeTypeOfService::class);
     }
+
+    public function findByOffice(Office $office): array
+{
+    return $this->createQueryBuilder('ots')
+        ->join('ots.office', 'o')
+        ->where(':office MEMBER OF ots.office')
+        ->setParameter('office', $office)
+        ->getQuery()
+        ->getResult();
+}
 
     //    /**
     //     * @return OfficeTypeOfService[] Returns an array of OfficeTypeOfService objects

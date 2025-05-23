@@ -16,6 +16,18 @@ class OfficeRepository extends ServiceEntityRepository
         parent::__construct($registry, Office::class);
     }
 
+    public function calculateAverageScore(Office $office): ?float
+    {
+    $qb = $this->getEntityManager()->createQueryBuilder();
+
+    $qb->select('AVG(CAST(r.note AS float))')
+        ->from('App\Entity\Review', 'r')
+        ->where('r.office = :office')
+        ->setParameter('office', $office);
+
+    return $qb->getQuery()->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Office[] Returns an array of Office objects
     //     */

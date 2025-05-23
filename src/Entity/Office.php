@@ -69,8 +69,9 @@ class Office
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column( nullable: true)]
-    private ?int $score = null;
+    #[ORM\Column(type: 'decimal', precision: 2, scale: 1, nullable: true)]
+    private ?string $score = null;
+
 
     #[ORM\Column( nullable: true)]
     private ?bool $vip = null;
@@ -313,12 +314,12 @@ class Office
         return $this;
     }
 
-    public function getScore(): ?int
+    public function getScore(): ?string
     {
         return $this->score;
     }
 
-    public function setScore(int $score): static
+    public function setScore(?string $score): static
     {
         $this->score = $score;
 

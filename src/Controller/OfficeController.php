@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Enum\statusEnum;
 use App\Entity\Office;
+use App\Entity\Review;
 use App\Entity\TimeConfiguration;
 use App\Form\OfficeForm;
 use App\Form\TimeConfigurationForm;
@@ -12,6 +13,7 @@ use App\Repository\TimeConfigurationRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -291,9 +293,17 @@ public function show(Office $office, EntityManagerInterface $em): Response
         return $service->getOfficeId()->contains($office);
     });
 
+    // Récupère les 5 derniers avis liés à cet office
+    $latestReviews = $em->getRepository(Review::class)->findBy(
+        ['office' => $office],
+        ['createdAt' => 'DESC'],
+        
+    );
+
     return $this->render('search/show.html.twig', [
         'office' => $office,
         'services' => $services,
+        'latestReviews' => $latestReviews,
     ]);
 }
 
@@ -321,7 +331,7 @@ public function show(Office $office, EntityManagerInterface $em): Response
                         $entityManager->flush();
 
                         $this->addFlash('success', 'Fermeture ajoutée avec succès.');
-                        return $this->redirectToRoute('office_details', ['id_off' => $id_off]);
+                        return $this->redirectToRoute('closure', ['id_off' => $id_off]);
                     }
 
                     return $this->render('office/closureForm.html.twig', [
@@ -424,11 +434,32 @@ public function addService(
 public function showClosure(int $id_off, EntityManagerInterface $em): Response
 {
     $office = $em->getRepository(Office::class)->find($id_off);
+    $closures = $em->getRepository(OfficeClosure::class)->findBy(['office' => $office]);
 
     return $this->render('Office/closure.html.twig', [
-        'office' => $office,
+        'office' => $office,'closures' => $closures,
     ]);
 }
+
+ #[Route('/closure/{id}/delete', name: 'delete_closure', methods: ['POST'])]
+                        public function deleteClosure(int $id, EntityManagerInterface $em, Request $request): RedirectResponse
+                        {
+                            $closure = $em->getRepository(OfficeClosure::class)->find($id);
+
+                            if (!$closure) {
+                                throw $this->createNotFoundException('Fermeture non trouvée.');
+                            }
+
+                            $officeId = $closure->getOffice()->getId();
+
+                            // Protection CSRF
+                            if ($this->isCsrfTokenValid('delete_closure_' . $closure->getId(), $request->request->get('_token'))) {
+                                $em->remove($closure);
+                                $em->flush();
+                            }
+
+                            return $this->redirectToRoute('closure', ['id_off' => $officeId]);
+                        }
 
     #[Route('office/{id_off}/Schedules', name: 'schedules', methods: ['GET'])]
 public function showSchedules(int $id_off, EntityManagerInterface $em, TimeConfigurationRepository $TimeConfigurationRepository ): Response
@@ -447,9 +478,39 @@ public function showServices(int $id_off, EntityManagerInterface $em): Response
 {
     $office = $em->getRepository(Office::class)->find($id_off);
 
+$officeTypeOfServices = $em->getRepository(OfficeTypeOfService::class)
+    ->findByOffice($office);
+
     return $this->render('Office/services.html.twig', [
         'office' => $office,
+        'officeTypeOfServices' => $officeTypeOfServices,
     ]);
 }
+
+    #[Route('/service/{id}/delete', name: 'delete_service', methods: ['POST'])]
+public function deleteService(int $id, EntityManagerInterface $em, Request $request): RedirectResponse
+{
+    $service = $em->getRepository(OfficeTypeOfService::class)->find($id);
+
+    if (!$service) {
+        throw $this->createNotFoundException('Prestation non trouvée.');
+    }
+
+    // Récupérer l'id du cabinet (office) lié (prend le premier dans la collection ManyToMany)
+    $office = $service->getOffice()->first();
+    $officeId = $office ? $office->getId() : null;
+
+    // Protection CSRF
+    if ($this->isCsrfTokenValid('delete_service_' . $service->getId(), $request->request->get('_token'))) {
+        $em->remove($service);
+        $em->flush();
+    }
+
+    return $this->redirectToRoute('services', ['id_off' => $officeId]);
+}
+
+   
+
+        
 
 }

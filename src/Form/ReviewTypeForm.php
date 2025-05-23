@@ -16,7 +16,7 @@ class ReviewTypeForm extends AbstractType
     {
         $builder
             ->add('note', ChoiceType::class, [
-                'label' => 'Note',
+                'label' => 'Note :',
                 'choices' => [
                 '⭐' => notesEnum::Note1,
                 '⭐⭐' => notesEnum::Note2,
@@ -28,7 +28,7 @@ class ReviewTypeForm extends AbstractType
                 'multiple' => false,
             ])
             ->add('comment', TextareaType::class, [
-                'label' => 'Commentaire',
+                'label' => 'Commentaire :',
                 'required' => false,
                 'attr' => ['placeholder' => 'Partagez votre expérience...'],
             ]);
